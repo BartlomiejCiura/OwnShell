@@ -1,10 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-int main(int argc, char **argv)
-{
-	while (1) {
-		printf(">");
-		getchar();
-	};
-return 0;
+#define MAX_LENGTH 1024
+
+int main(int argc, char *argv[]) {
+  char line[MAX_LENGTH];
+
+  while (1) {
+    printf("$ ");
+    if (!fgets(line, MAX_LENGTH, stdin)) break;
+    printf("%s", line);
+  }
+
+  return 0;
 }
