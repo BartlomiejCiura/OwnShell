@@ -4,8 +4,12 @@
 #include <unistd.h>
 #include <errno.h>
 
+
 void parseCmd(char* cmd, char** params);
 int executeCmd(char** params);
+int go_cd(char** params) {
+		chdir(params[1]);
+}
 
 #define MAX_COMMAND_LENGTH 100
 #define MAX_NUMBER_OF_PARAMS 10
@@ -32,12 +36,15 @@ int main()
 
         // Split cmd into array of parameters
         parseCmd(cmd, params);
-
+		  go_cd(params);
         // Exit?
         if(strcmp(params[0], "exit") == 0) break;
 
         // Execute command
-        if(executeCmd(params) == 0) break;
+			if(strcmp(params[0], "cd") == 0) {
+				go_cd(params);
+			}
+         else if(executeCmd(params) == 0) break;
     }
 
     return 0;
@@ -67,11 +74,11 @@ int executeCmd(char** params)
     // Child process
     else if (pid == 0) {
         // Execute command
-        execvp(params[0], params);  
+	     execvp(params[0], params);  
 
         // Error occurred
         char* error = strerror(errno);
-        printf("shell: %s: %s\n", params[0], error);
+        printf("bledzik: %s: %s\n", params[0], error);
         return 0;
     }
 
