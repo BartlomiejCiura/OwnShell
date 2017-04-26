@@ -8,7 +8,14 @@
 void parseCmd(char* cmd, char** params);
 int executeCmd(char** params);
 int go_cd(char** params) {
-		chdir(params[1]);
+	if (params[1] == NULL) {
+		fprintf(stderr, "ERROR: expected argument to \"cd\"\n");
+	} else {
+		if (chdir(params[1]) != 0) {
+			perror("ERROR");
+		}
+	}
+	return 1;
 }
 
 #define MAX_COMMAND_LENGTH 100
@@ -19,12 +26,10 @@ int main()
     char cmd[MAX_COMMAND_LENGTH + 1];
     char* params[MAX_NUMBER_OF_PARAMS + 1];
 
-    int cmdCount = 0;
-
     while(1) {
         // Print command prompt
         char* username = getenv("USER");
-        printf("%s@shell %d> ", username, ++cmdCount);
+        printf("%s@shell: ", username);
 
         // Read command from standard input, exit on Ctrl+D
         if(fgets(cmd, sizeof(cmd), stdin) == NULL) break;
@@ -36,7 +41,6 @@ int main()
 
         // Split cmd into array of parameters
         parseCmd(cmd, params);
-		  go_cd(params);
         // Exit?
         if(strcmp(params[0], "exit") == 0) break;
 
