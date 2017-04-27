@@ -28,6 +28,14 @@ int lsh_num_builtins() {
   return sizeof(builtin_str) / sizeof(char *);
 }
 
+void readCommandLine(char* cmd) {
+	fgets(cmd, sizeof(cmd), stdin);
+	// Remove trailing newline character, if any
+	if(cmd[strlen(cmd)-1] == '\n') {
+		cmd[strlen(cmd)-1] = '\0';
+	}
+}
+
 #define MAX_COMMAND_LENGTH 100
 #define MAX_NUMBER_OF_PARAMS 10
 
@@ -39,24 +47,15 @@ int main()
 	printf("Type 'help' to check built in commands\n");
 
 	while(1) {
-		// Print command prompt
 		char* username = getenv("USER");
 		printf("%s@shell: ", username);
 
-		// Read command from standard input, exit on Ctrl+D
-		if(fgets(cmd, sizeof(cmd), stdin) == NULL) break;
-
-		// Remove trailing newline character, if any
-		if(cmd[strlen(cmd)-1] == '\n') {
-			cmd[strlen(cmd)-1] = '\0';
-		}
-
-		// Split cmd into array of parameters
+		readCommandLine(cmd);
 		parseCmd(cmd, params);
 
 		if(is_build_command(params) == 0) break;
 		else if(executeCmd(params) == 0) break;
-}
+	}
 return 0;
 }
 
