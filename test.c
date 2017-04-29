@@ -7,10 +7,10 @@
 
 void parseCmd(char* cmd, char** params);
 int executeCmd(char** params);
-int go_cd(char **args);
-int go_help(char **args);
-int go_exit(char **args);
-int is_build_command(char **args); 
+int go_cd(char **params);
+int go_help(char **params);
+int go_exit(char **params);
+int is_build_command(char **params); 
 
 char *builtin_str[] = {
   "cd",
@@ -115,7 +115,7 @@ int go_cd(char** params) {
 	return 1;
 }
 
-int go_help(char **args) {
+int go_help(char **params) {
 	int i;
 	printf("The following commands are built in:\n");
 
@@ -125,15 +125,15 @@ int go_help(char **args) {
   	return 1;
 }
 
-int go_exit(char **args) {
+int go_exit(char **params) {
 	return 0;
 }
 
-int is_build_command(char **args) {
+int is_build_command(char **params) {
 	int i;
 	for (i = 0; i < lsh_num_builtins(); i++) {
-   	if (strcmp(args[0], builtin_str[i]) == 0) {
-   	   return (*builtin_func[i])(args);
+   	if (strcmp(params[0], builtin_str[i]) == 0) {
+   	   return (*builtin_func[i])(params);
     	}
   	}	
 	return 1;
