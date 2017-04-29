@@ -50,7 +50,13 @@ int main()
 		char* username = getenv("USER");
 		printf("%s@shell: ", username);
 
-		readCommandLine(cmd);
+	
+		fgets(cmd, sizeof(cmd), stdin);
+		//readCommandLine(cmd);
+		if(cmd[strlen(cmd)-1] == '\n') {
+			cmd[strlen(cmd)-1] = '\0';
+		}	
+
 		parseCmd(cmd, params);
 
 		if(is_build_command(params) == 0) break;
