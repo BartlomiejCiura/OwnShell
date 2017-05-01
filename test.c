@@ -20,7 +20,7 @@ int main()
 		}	
 
 		parseCmd(cmd, params);
-		// it's not working VVV need to change
+
 		if(isBuiltInCommand(params) == 0) {
 			executeBuiltInCommand(params);
 		}
