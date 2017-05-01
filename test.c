@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/wait.h>
 
 
 void parseCmd(char* cmd, char** params);
@@ -10,7 +11,8 @@ int executeCmd(char** params);
 int go_cd(char **params);
 int go_help(char **params);
 int go_exit(char **params);
-int is_build_command(char **params); 
+int executeBuiltInCommand(char **params); 
+int isBuiltInCommand(char** params);
 
 char *builtin_str[] = {
   "cd",
@@ -50,16 +52,18 @@ int main()
 		char* username = getenv("USER");
 		printf("%s@shell: ", username);
 
-	
-		fgets(cmd, sizeof(cmd), stdin);
 		//readCommandLine(cmd);
+				
+		fgets(cmd, sizeof(cmd), stdin);
 		if(cmd[strlen(cmd)-1] == '\n') {
 			cmd[strlen(cmd)-1] = '\0';
 		}	
 
 		parseCmd(cmd, params);
-
-		if(is_build_command(params) == 0) break;
+		// it's not working VVV need to change
+		if(isBuiltInCommand(params) == 0) {
+			executeBuiltInCommand(params);
+		}
 		else if(executeCmd(params) == 0) break;
 	}
 return 0;
@@ -91,7 +95,7 @@ int executeCmd(char** params) {
 
         // Error occurred
    //     char* error = strerror(errno);
-   //     printf("bledzik: %s: %s\n", params[0], error);
+        printf("%s - Unknown command \n", params[0]);
         return 0;
     }
 
@@ -126,14 +130,24 @@ int go_help(char **params) {
 }
 
 int go_exit(char **params) {
-	return 0;
+	exit(EXIT_SUCCESS);
 }
 
-int is_build_command(char **params) {
+int executeBuiltInCommand(char **params) {
 	int i;
 	for (i = 0; i < lsh_num_builtins(); i++) {
    	if (strcmp(params[0], builtin_str[i]) == 0) {
    	   return (*builtin_func[i])(params);
+    	}
+  	}	
+	return 1;
+}
+
+int isBuiltInCommand(char** params) {
+	int i;
+	for (i = 0; i < lsh_num_builtins(); i++) {
+   	if (strcmp(params[0], builtin_str[i]) == 0) {
+   	   return 0;
     	}
   	}	
 	return 1;
