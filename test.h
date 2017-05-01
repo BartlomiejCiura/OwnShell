@@ -16,7 +16,7 @@ int go_exit(char **params);
 int executeBuiltInCommand(char **params); 
 int isBuiltInCommand(char** params);
 int lsh_num_builtins();
-void readCommandLine(char* cmd);
+void readCommandLine(char* cmd, size_t cmdSize);
 
 char *builtin_str[] = {
   "cd",

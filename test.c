@@ -12,13 +12,7 @@ int main()
 		char* username = getenv("USER");
 		printf("%s@shell: ", username);
 
-		//readCommandLine(cmd);
-				
-		fgets(cmd, sizeof(cmd), stdin);
-		if(cmd[strlen(cmd)-1] == '\n') {
-			cmd[strlen(cmd)-1] = '\0';
-		}	
-
+		readCommandLine(cmd, sizeof(cmd));
 		parseCmd(cmd, params);
 
 		if(isBuiltInCommand(params) == 0) {
@@ -29,20 +23,43 @@ int main()
 return 0;
 }
 
-void readCommandLine(char* cmd) {
-	fgets(cmd, sizeof(cmd), stdin);
-	// Remove trailing newline character, if any
+void readCommandLine(char* cmd, size_t cmdSize) {
+	fgets(cmd, cmdSize, stdin);
+
 	if(cmd[strlen(cmd)-1] == '\n') {
 		cmd[strlen(cmd)-1] = '\0';
 	}
 }
 
-// Split cmd into array of parameters
 void parseCmd(char* cmd, char** params) {       
     for(int i = 0; i < MAX_NUMBER_OF_PARAMS; i++) {
         params[i] = strsep(&cmd, " ");
         if(params[i] == NULL) break;
     }
+}
+
+int isBuiltInCommand(char** params) {
+	int i;
+	for (i = 0; i < lsh_num_builtins(); i++) {
+   	if (strcmp(params[0], builtin_str[i]) == 0) {
+   	   return 0;
+    	}
+  	}	
+	return 1;
+}
+
+int lsh_num_builtins() {
+  return sizeof(builtin_str) / sizeof(char *);
+}
+
+int executeBuiltInCommand(char **params) {
+	int i;
+	for (i = 0; i < lsh_num_builtins(); i++) {
+   	if (strcmp(params[0], builtin_str[i]) == 0) {
+   	   return (*builtin_func[i])(params);
+    	}
+  	}	
+	return 1;
 }
 
 int executeCmd(char** params) {
@@ -100,31 +117,6 @@ int go_help(char **params) {
 int go_exit(char **params) {
 	exit(EXIT_SUCCESS);
 }
-
-int executeBuiltInCommand(char **params) {
-	int i;
-	for (i = 0; i < lsh_num_builtins(); i++) {
-   	if (strcmp(params[0], builtin_str[i]) == 0) {
-   	   return (*builtin_func[i])(params);
-    	}
-  	}	
-	return 1;
-}
-
-int isBuiltInCommand(char** params) {
-	int i;
-	for (i = 0; i < lsh_num_builtins(); i++) {
-   	if (strcmp(params[0], builtin_str[i]) == 0) {
-   	   return 0;
-    	}
-  	}	
-	return 1;
-}
-
-int lsh_num_builtins() {
-  return sizeof(builtin_str) / sizeof(char *);
-}
-
 
 
 
