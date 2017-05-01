@@ -1,20 +1,5 @@
 #include "test.h"
 
-char *builtin_str[] = {
-  "cd",
-  "help",
-  "exit"
-};
-
-int (*builtin_func[]) (char **) = {
-  &go_cd,
-  &go_help,
-  &go_exit
-};
-
-
-#define MAX_COMMAND_LENGTH 100
-#define MAX_NUMBER_OF_PARAMS 10
 
 int main()
 {
