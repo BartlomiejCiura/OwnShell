@@ -1,18 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/wait.h>
-
-
-void parseCmd(char* cmd, char** params);
-int executeCmd(char** params);
-int go_cd(char **params);
-int go_help(char **params);
-int go_exit(char **params);
-int executeBuiltInCommand(char **params); 
-int isBuiltInCommand(char** params);
+#include "test.h"
 
 char *builtin_str[] = {
   "cd",
@@ -26,17 +12,6 @@ int (*builtin_func[]) (char **) = {
   &go_exit
 };
 
-int lsh_num_builtins() {
-  return sizeof(builtin_str) / sizeof(char *);
-}
-
-void readCommandLine(char* cmd) {
-	fgets(cmd, sizeof(cmd), stdin);
-	// Remove trailing newline character, if any
-	if(cmd[strlen(cmd)-1] == '\n') {
-		cmd[strlen(cmd)-1] = '\0';
-	}
-}
 
 #define MAX_COMMAND_LENGTH 100
 #define MAX_NUMBER_OF_PARAMS 10
@@ -45,7 +20,7 @@ int main()
 {
 	char cmd[MAX_COMMAND_LENGTH + 1];
 	char* params[MAX_NUMBER_OF_PARAMS + 1];
-	
+
 	printf("Type 'help' to check built in commands\n");
 
 	while(1) {
@@ -67,6 +42,14 @@ int main()
 		else if(executeCmd(params) == 0) break;
 	}
 return 0;
+}
+
+void readCommandLine(char* cmd) {
+	fgets(cmd, sizeof(cmd), stdin);
+	// Remove trailing newline character, if any
+	if(cmd[strlen(cmd)-1] == '\n') {
+		cmd[strlen(cmd)-1] = '\0';
+	}
 }
 
 // Split cmd into array of parameters
@@ -152,3 +135,12 @@ int isBuiltInCommand(char** params) {
   	}	
 	return 1;
 }
+
+int lsh_num_builtins() {
+  return sizeof(builtin_str) / sizeof(char *);
+}
+
+
+
+
+
