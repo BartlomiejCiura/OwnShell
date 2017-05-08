@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <stdbool.h>
 #include "test.h"
 
 #define MAX_COMMAND_LENGTH 100
@@ -28,9 +29,10 @@ int main()
 			bg = 1;
 			cmd[strlen(cmd)-1] = '\0';			
 		}
+
 	
 		parseCmd(cmd, params);
-
+		
 
 
 		if (isBuiltInCommand(params)) {
@@ -56,7 +58,8 @@ int main()
 					if (bg == 1) {
 						signal(SIGCHLD, SIG_IGN);
 					} else {
-						waitpid(childPid, &status, 0);
+					//	waitpid(childPid, &status, 0);
+						wait(NULL);
 					}
 					//	waitpid (childPid);
 					}	
@@ -69,6 +72,22 @@ return 0;
 
 void readCommandLine(char* cmd, size_t cmdSize) {
 	fgets(cmd, cmdSize, stdin);
+
+	char* uname = getenv("USER");
+	char filee1[] = "/home/";
+	char filee2[] = "/LinuxShell/history.txt";
+	char* allfile = strncat(filee1, uname, sizeof(char[100]));
+	char* allfile2 = strncat(allfile, filee2, sizeof(char[100]));
+	
+	FILE *f = fopen(allfile2, "a");
+	if (f == NULL)
+	{
+		 printf("Error opening file!\n");
+		 exit(1);
+	}
+
+	fprintf(f, "%s", cmd);
+	fclose(f);
 
 	if(cmd[strlen(cmd)-1] == '\n') {
 		cmd[strlen(cmd)-1] = '\0';
