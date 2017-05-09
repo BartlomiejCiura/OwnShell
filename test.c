@@ -71,6 +71,7 @@ return 0;
 
 
 void readCommandLine(char* cmd, size_t cmdSize) {
+	int ch, number_of_lines = 0;
 	fgets(cmd, cmdSize, stdin);
 
 	char* uname = getenv("USER");
@@ -79,15 +80,32 @@ void readCommandLine(char* cmd, size_t cmdSize) {
 	char* allfile = strncat(filee1, uname, sizeof(char[100]));
 	char* allfile2 = strncat(allfile, filee2, sizeof(char[100]));
 	
-	FILE *f = fopen(allfile2, "a");
-	if (f == NULL)
-	{
+	FILE *f = fopen(allfile2, "a+");
+	
+		
+	if (f == NULL)	{
 		 printf("Error opening file!\n");
 		 exit(1);
 	}
 
+	do {
+	  ch = fgetc(f);
+    	if(ch == '\n') {
+       	 number_of_lines++;
+        }
+	} while (ch != EOF);
+	
+	if(ch != '\n' && number_of_lines != 0) {
+    	number_of_lines++;
+	}
+	
+	if (number_of_lines > 20) {
+		
+	}
+	
 	fprintf(f, "%s", cmd);
 	fclose(f);
+	printf("number of lines in test.txt = %d", number_of_lines);
 
 	if(cmd[strlen(cmd)-1] == '\n') {
 		cmd[strlen(cmd)-1] = '\0';
@@ -182,6 +200,29 @@ int go_help(char **params) {
 		printf("--> %s\n", builtin_str[i]);
   	}
   	return 1;
+}
+
+int go_history(char **params) {
+	#define CHUNK 1024 /* read 1024 bytes at a time */
+	char buf[CHUNK];
+	FILE *file;
+	size_t nread;
+
+	char* uname = getenv("USER");
+	char filee1[] = "/home/";
+	char filee2[] = "/LinuxShell/history.txt";
+	char* allfile = strncat(filee1, uname, sizeof(char[100]));
+	char* allfile2 = strncat(allfile, filee2, sizeof(char[100]));
+
+	file = fopen(allfile2, "r");
+	if (file) {
+		 while ((nread = fread(buf, 1, sizeof buf, file)) > 0)
+		     fwrite(buf, 1, nread, stdout);
+		 if (ferror(file)) {
+		     printf("BLAD");
+		 }
+		 fclose(file);
+	}
 }
 
 
