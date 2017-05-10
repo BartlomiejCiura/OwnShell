@@ -11,6 +11,44 @@
 #define MAX_NUMBER_OF_PARAMS 10
 
 
+void saveCommandAsHistory(char* cmd) {
+	int ch, number_of_lines = 0;
+
+	char* uname = getenv("USER");
+	char filee1[] = "/home/";
+	char filee2[] = "/LinuxShell/history.txt";
+	char* allfile = strncat(filee1, uname, sizeof(char[100]));
+	char* allfile2 = strncat(allfile, filee2, sizeof(char[100]));
+	
+	FILE *f = fopen(allfile2, "a+");
+	
+		
+	if (f == NULL)	{
+		 printf("Error opening file!\n");
+		 exit(1);
+	}
+
+	do {
+	  ch = fgetc(f);
+    	if(ch == '\n') {
+       	 number_of_lines++;
+        }
+	} while (ch != EOF);
+	
+	if(ch != '\n' && number_of_lines != 0) {
+    	number_of_lines++;
+	}
+	
+	if (number_of_lines > 20) {
+		
+	}
+	
+	fprintf(f, "%s", cmd);
+	fclose(f);
+	printf("number of lines in test.txt = %d", number_of_lines);
+
+}
+
 int main()
 {
 	char cmd[MAX_COMMAND_LENGTH + 1];
@@ -25,6 +63,12 @@ int main()
 		printf("%s@shell: ", username);
 
 		readCommandLine(cmd, sizeof(cmd));
+		saveCommandAsHistory(cmd);
+		
+		if(cmd[strlen(cmd)-1] == '\n') {
+			cmd[strlen(cmd)-1] = '\0';
+		}
+
 		if(cmd[strlen(cmd)-1] == '&') {
 			bg = 1;
 			cmd[strlen(cmd)-1] = '\0';			
@@ -71,45 +115,7 @@ return 0;
 
 
 void readCommandLine(char* cmd, size_t cmdSize) {
-	int ch, number_of_lines = 0;
 	fgets(cmd, cmdSize, stdin);
-
-	char* uname = getenv("USER");
-	char filee1[] = "/home/";
-	char filee2[] = "/LinuxShell/history.txt";
-	char* allfile = strncat(filee1, uname, sizeof(char[100]));
-	char* allfile2 = strncat(allfile, filee2, sizeof(char[100]));
-	
-	FILE *f = fopen(allfile2, "a+");
-	
-		
-	if (f == NULL)	{
-		 printf("Error opening file!\n");
-		 exit(1);
-	}
-
-	do {
-	  ch = fgetc(f);
-    	if(ch == '\n') {
-       	 number_of_lines++;
-        }
-	} while (ch != EOF);
-	
-	if(ch != '\n' && number_of_lines != 0) {
-    	number_of_lines++;
-	}
-	
-	if (number_of_lines > 20) {
-		
-	}
-	
-	fprintf(f, "%s", cmd);
-	fclose(f);
-	printf("number of lines in test.txt = %d", number_of_lines);
-
-	if(cmd[strlen(cmd)-1] == '\n') {
-		cmd[strlen(cmd)-1] = '\0';
-	}
 }
 
 
