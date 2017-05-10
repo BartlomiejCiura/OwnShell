@@ -11,17 +11,10 @@
 #define MAX_NUMBER_OF_PARAMS 10
 
 
-void saveCommandAsHistory(char* cmd) {
+void saveCommandAsHistory(char* cmd, char* PATH_TO_FILE) {
 	int ch, number_of_lines = 0;
 
-	char* uname = getenv("USER");
-	char filee1[] = "/home/";
-	char filee2[] = "/LinuxShell/history.txt";
-	char* allfile = strncat(filee1, uname, sizeof(char[100]));
-	char* allfile2 = strncat(allfile, filee2, sizeof(char[100]));
-	
-	FILE *f = fopen(allfile2, "a+");
-	
+	FILE *f = fopen(PATH_TO_FILE, "a+");
 		
 	if (f == NULL)	{
 		 printf("Error opening file!\n");
@@ -45,12 +38,25 @@ void saveCommandAsHistory(char* cmd) {
 	
 	fprintf(f, "%s", cmd);
 	fclose(f);
-	printf("number of lines in test.txt = %d", number_of_lines);
+	printf("number of lines in test.txt = %d\n", number_of_lines);
 
 }
 
 int main()
 {
+
+	char PATH_TO_FILE[50];
+	char dest[50];
+	char* uname = getenv("USER");
+	strcpy(PATH_TO_FILE, "/home/");
+	strcat(PATH_TO_FILE, uname);
+	
+	strcpy(dest, "/LinuxShell/history.txt");
+	strcat(PATH_TO_FILE, dest);
+
+	printf("sciezka1 %s\n", PATH_TO_FILE);
+
+
 	char cmd[MAX_COMMAND_LENGTH + 1];
 	char* params[MAX_NUMBER_OF_PARAMS + 1];
 	int childPid;
@@ -63,7 +69,7 @@ int main()
 		printf("%s@shell: ", username);
 
 		readCommandLine(cmd, sizeof(cmd));
-		saveCommandAsHistory(cmd);
+		saveCommandAsHistory(cmd, PATH_TO_FILE);
 		
 		if(cmd[strlen(cmd)-1] == '\n') {
 			cmd[strlen(cmd)-1] = '\0';
