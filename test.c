@@ -13,24 +13,12 @@
 
 int main()
 {
-
-	char PATH_TO_FILE[50];
-	char dest[50];
-	char* uname = getenv("USER");
-	strcpy(PATH_TO_FILE, "/home/");
-	strcat(PATH_TO_FILE, uname);
-	
-	strcpy(dest, "/LinuxShell/history.txt");
-	strcat(PATH_TO_FILE, dest);
-
-	printf("sciezka1 %s\n", PATH_TO_FILE);
-
-
 	char cmd[MAX_COMMAND_LENGTH + 1];
 	char* params[MAX_NUMBER_OF_PARAMS + 1];
 	int childPid;
 	int bg = 0;
 	int status = 0;
+	createPathToHistoryFile();
 	printf("Type 'help' to check built in commands\n");
 
 	while(1) {
@@ -38,7 +26,7 @@ int main()
 		printf("%s@shell: ", username);
 
 		readCommandLine(cmd, sizeof(cmd));
-		saveCommandAsHistory(cmd, PATH_TO_FILE);
+		saveCommandAsHistory(cmd);
 		
 		if(cmd[strlen(cmd)-1] == '\n') {
 			cmd[strlen(cmd)-1] = '\0';
@@ -160,9 +148,8 @@ int executeCmd(char** params) {
     }
 }
 
-void saveCommandAsHistory(char* cmd, char* PATH_TO_FILE) {
+void saveCommandAsHistory(char* cmd) {
 	int ch, number_of_lines = 0;
-
 	FILE *f = fopen(PATH_TO_FILE, "a+");
 		
 	if (f == NULL)	{
@@ -187,7 +174,16 @@ void saveCommandAsHistory(char* cmd, char* PATH_TO_FILE) {
 	
 	fprintf(f, "%s", cmd);
 	fclose(f);
-	printf("number of lines in test.txt = %d\n", number_of_lines);
+}
+
+void createPathToHistoryFile(void) {
+	char dest[50];
+	char* uname = getenv("USER");
+
+	strcpy(PATH_TO_FILE, "/home/");
+	strcat(PATH_TO_FILE, uname);
+	strcpy(dest, "/LinuxShell/history.txt");
+	strcat(PATH_TO_FILE, dest);
 }
 
 
@@ -214,18 +210,12 @@ int go_help(char **params) {
 }
 
 int go_history(char **params) {
-	#define CHUNK 1024 /* read 1024 bytes at a time */
-	char buf[CHUNK];
+	char buf[1024];
 	FILE *file;
 	size_t nread;
 
-	char* uname = getenv("USER");
-	char filee1[] = "/home/";
-	char filee2[] = "/LinuxShell/history.txt";
-	char* allfile = strncat(filee1, uname, sizeof(char[100]));
-	char* allfile2 = strncat(allfile, filee2, sizeof(char[100]));
 
-	file = fopen(allfile2, "r");
+	file = fopen(PATH_TO_FILE, "r");
 	if (file) {
 		 while ((nread = fread(buf, 1, sizeof buf, file)) > 0)
 		     fwrite(buf, 1, nread, stdout);
