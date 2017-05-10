@@ -9,6 +9,7 @@ int executeBuiltInCommand(char **params);
 int isBuiltInCommand(char** params);
 int lsh_num_builtins();
 void readCommandLine(char* cmd, size_t cmdSize);
+void saveCommandAsHistory(char* cmd, char* PATH_TO_FILE);
 
 char *builtin_str[] = {
  	"cd",

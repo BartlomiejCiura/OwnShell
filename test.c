@@ -11,37 +11,6 @@
 #define MAX_NUMBER_OF_PARAMS 10
 
 
-void saveCommandAsHistory(char* cmd, char* PATH_TO_FILE) {
-	int ch, number_of_lines = 0;
-
-	FILE *f = fopen(PATH_TO_FILE, "a+");
-		
-	if (f == NULL)	{
-		 printf("Error opening file!\n");
-		 exit(1);
-	}
-
-	do {
-	  ch = fgetc(f);
-    	if(ch == '\n') {
-       	 number_of_lines++;
-        }
-	} while (ch != EOF);
-	
-	if(ch != '\n' && number_of_lines != 0) {
-    	number_of_lines++;
-	}
-	
-	if (number_of_lines > 20) {
-		
-	}
-	
-	fprintf(f, "%s", cmd);
-	fclose(f);
-	printf("number of lines in test.txt = %d\n", number_of_lines);
-
-}
-
 int main()
 {
 
@@ -189,6 +158,36 @@ int executeCmd(char** params) {
         waitpid(pid, &childStatus, 0);
         return 1;
     }
+}
+
+void saveCommandAsHistory(char* cmd, char* PATH_TO_FILE) {
+	int ch, number_of_lines = 0;
+
+	FILE *f = fopen(PATH_TO_FILE, "a+");
+		
+	if (f == NULL)	{
+		 printf("Error opening file!\n");
+		 exit(1);
+	}
+
+	do {
+	  ch = fgetc(f);
+    	if(ch == '\n') {
+       	 number_of_lines++;
+        }
+	} while (ch != EOF);
+	
+	if(ch != '\n' && number_of_lines != 0) {
+    	number_of_lines++;
+	}
+	
+	if (number_of_lines > 20) {
+		
+	}
+	
+	fprintf(f, "%s", cmd);
+	fclose(f);
+	printf("number of lines in test.txt = %d\n", number_of_lines);
 }
 
 
