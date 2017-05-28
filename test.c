@@ -14,13 +14,15 @@
 int main()
 {
 	char cmd[MAX_COMMAND_LENGTH + 1];
+	char cmd2[MAX_COMMAND_LENGTH + 1];
 	char* params[MAX_NUMBER_OF_PARAMS + 1];
 	int childPid;
 	int bg = 0;
 	int status = 0;
+	char scriptName[100];
 	createPathToHistoryFile();
 	printf("Type 'help' to check built in commands\n");
-
+	
 	while(1) {
 		char* username = getenv("USER");
 		printf("%s@shell: ", username);
@@ -36,46 +38,77 @@ int main()
 			bg = 1;
 			cmd[strlen(cmd)-1] = '\0';			
 		}
-
 	
-		parseCmd(cmd, params);
+		if(cmd[0] == '.' && cmd[1] == '/' ){
+			for (int i = 0; i < 100; i++){
+				scriptName[i] = cmd[i+2];
+				if(cmd[i+2] == '\0') break;
+			}
+			
+			char buf[1024];
+			FILE *file;
+			size_t nread;
+			file = fopen("/home/mlody/LinuxShell/scripts/test.sh", "r");
+			if (file) {
+				int i = 0;
+				while(!feof(file)){
+					while(fgets(cmd, 512, file)){
+						i++;
+						if(cmd[strlen(cmd)-1] == '\n') {
+							cmd[strlen(cmd)-1] = '\0';
+						}
+						if (i > 1){
+							//////////////////
+							parseCmd(cmd, params);
 		
+							if (isBuiltInCommand(params)) {
+								executeBuiltInCommand(params);
+							}
+							else{
+								childPid = fork();
+								if (childPid == 0) {
+								execvp(params[0], params);  
+								printf("%s - Unknown command \n", params[0]);
+								return 0;
+								}else{
+									if (bg == 1) {
+										signal(SIGCHLD, SIG_IGN);
+									}else{
+										wait(NULL);
+									}
+								}	
+							}	
+						/////////////////
+						}
+					}		
+				}			
+				fclose(file);	
+			}
+		}else{
 
-
-		if (isBuiltInCommand(params)) {
-			executeBuiltInCommand(params);
-		}
-		else {
-			childPid = fork();
-			if (childPid == 0) {
-
-		//		if(bg == 1) {
-			//		fclose(stdin);
-			//		fopen("/dev/null", "r");
-		//			execvp(params[0], params);  
-	//			} else {
-			//	executeCmd(params)
-				execvp(params[0], params);  
-			//	printf("\n");
-				
-	        printf("%s - Unknown command \n", params[0]);
-	        return 0;
-	     //   }
-			} else {
+			parseCmd(cmd, params);
+		
+			if (isBuiltInCommand(params)) {
+				executeBuiltInCommand(params);
+			}
+			else{
+				childPid = fork();
+				if (childPid == 0) {
+				execvp(params[0], params);  		
+			   printf("%s - Unknown command \n", params[0]);
+			   return 0;
+				}else{
 					if (bg == 1) {
 						signal(SIGCHLD, SIG_IGN);
-					} else {
-					//	waitpid(childPid, &status, 0);
+					}else {
 						wait(NULL);
 					}
-					//	waitpid (childPid);
-					}	
+				}	
 			}
-		
+		}
 	}
 return 0;
 }
-
 
 void readCommandLine(char* cmd, size_t cmdSize) {
 	fgets(cmd, cmdSize, stdin);
@@ -143,7 +176,7 @@ int executeCmd(char** params) {
     else {
         // Wait for child process to finish
         int childStatus;
-        waitpid(pid, &childStatus, 0);
+        //waitpid(pid, &childStatus, 0);
         return 1;
     }
 }
@@ -230,7 +263,3 @@ int go_history(char **params) {
 int go_exit(char **params) {
 	exit(EXIT_SUCCESS);
 }
-
-
-
-
